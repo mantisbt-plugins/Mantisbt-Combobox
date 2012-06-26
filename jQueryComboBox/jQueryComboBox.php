@@ -6,15 +6,15 @@ class jQueryComboBoxPlugin extends MantisPlugin {
 		$this->name = 'jQuery ComboBox Replacement';
 		$this->description = 'Provides a ComboBox replacement.';
 
-		$this->version = '0.1';
+		$this->version = '0.2';
 		$this->requires = array(
 			'MantisCore' => '1.2.0',
 			'jQuery' => '1.6.2',
 		);
 
-		$this->author	= 'Tobias Kalbitz';
+		$this->author	= 'Tobias Kalbitz & Markus Schneider';
 		$this->contact	= 'tobias.kalbitz (at) googlemail.com';
-		$this->url		= 'http://initos.com';
+		$this->url		= 'http://www.initos.com';
 	}
 
 	function hooks() {

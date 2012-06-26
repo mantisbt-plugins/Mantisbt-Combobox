@@ -10,6 +10,23 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 */
 
+function storeValue(itemValue){
+    if(!localStorage) return;
+
+    // start storing fav projects
+    var favProjects = JSON.parse(localStorage.getItem('favProjects'));
+    if(!favProjects){
+        favProjects = {};
+    }
+    if(!favProjects[itemValue]){
+        favProjects[itemValue] = 0;
+    }
+    favProjects[itemValue] += 1;
+    localStorage.setItem('favProjects',JSON.stringify(favProjects));
+}
+
+
+
 
 (function($) {
 	$.widget("ui.combobox", {
@@ -55,6 +72,9 @@ specific language governing permissions and limitations under the License.
 					},
 					select: function(event, ui) {
 						select.val(ui.item.value);// update (hidden) select
+
+                        storeValue(ui.item.value); // save in local storage
+                        
 						select.change();
 						$(this).val(ui.item.label);
 						return false;
@@ -122,6 +142,8 @@ specific language governing permissions and limitations under the License.
         					$(input).closest("form").submit(); 
     					} , 50 );
 			}});
+
+            
 			//input.autocomplete.result(function(event, data, formatted) {
   			//	$(this).closest("form").submit();
 			//});
@@ -135,5 +157,59 @@ jQuery(document).ready(function($) {
 	$(function() {
 		//$(".combobox").combobox();
 		jQuery('select[name="project_id"]').combobox();
+
+        select = jQuery('select[name="project_id"]').first();
+        // process select options into an array
+		var opts = new Array();
+		$('option',select).each(function(index) {
+			var opt = new Object();
+			opt.value = $(this).val();
+			opt.label = $(this).text();
+			opts[opts.length] = opt;
+		});
+        var favProjects = JSON.parse(localStorage.getItem('favProjects'));
+        // process select projects into an array
+		var pros = new Array();
+		jQuery.each(favProjects, function(index, value) {
+			var pro = new Object();
+			pro.index = index;
+			pro.value = value;
+			pros[pros.length] = pro;
+		});
+        pros.sort(function(a,b){return a.value < b.value;});
+        var linkCount = 0;
+        var favDiv = jQuery('<div align="right" style="font-size: 11px;"></div>');
+        jQuery.each(pros, function(ind, obj) { 
+            var index = obj.index;
+            var value = obj.value;
+            if(select.val() == index) return;
+            linkCount += 1;
+            if(linkCount > 5) return;
+            var linkLabel = '';
+            for (var i=0; i < opts.length; i++){
+				if(opts[i].value == index){
+					linkLabel = opts[i].label;
+					break;
+				}
+			}
+            if(linkLabel == '') return;
+
+            var favLink = $('<a>',{
+                text: linkLabel.trim(),
+                title: linkLabel,
+                href: '#',
+                click: function(){ 
+                    select.val(index); 
+                    storeValue(index); 
+                    select.change(); 
+                    return false;}
+            });
+
+            favDiv.append(favLink);
+            if(linkCount < 5)
+             favDiv.append(" | ");
+        });
+        favDiv.insertBefore(jQuery('table').first());
+
 	});
 });
