@@ -176,7 +176,14 @@ jQuery(document).ready(function($) {
 			pro.value = value;
 			pros[pros.length] = pro;
 		});
-        pros.sort(function(a,b){return a.value < b.value;});
+        var sorter = function(a,b){
+            if(parseInt(a.value) == parseInt(b.value)){
+                return 0;
+            }
+                return parseInt(a.value) < parseInt(b.value) ? 1 : -1 ;
+        }
+        pros = pros.sort(sorter);
+
         var linkCount = 0;
         var favDiv = jQuery('<div align="right" style="font-size: 11px;"></div>');
         jQuery.each(pros, function(ind, obj) { 
@@ -184,7 +191,7 @@ jQuery(document).ready(function($) {
             var value = obj.value;
             if(select.val() == index) return;
             linkCount += 1;
-            if(linkCount > 5) return;
+            if(linkCount > 10) return;
             var linkLabel = '';
             for (var i=0; i < opts.length; i++){
 				if(opts[i].value == index){
@@ -206,7 +213,7 @@ jQuery(document).ready(function($) {
             });
 
             favDiv.append(favLink);
-            if(linkCount < 5)
+            if(linkCount < 9)
              favDiv.append(" | ");
         });
         favDiv.insertBefore(jQuery('table').first());
